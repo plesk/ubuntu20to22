@@ -1,0 +1,34 @@
+name: Build with Buck
+
+on: [push]
+
+jobs:
+  build:
+    # Not latest, because python3.6 is not available on latest
+    # (https://github.com/actions/setup-python/issues/544),
+    # and SandakovMM/build-with-buck@v2 action requires it
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        # We use tags to determine version, so fetch them
+        fetch-depth: 0
+        fetch-tags: true
+    # Workaround for https://github.com/actions/checkout/issues/882
+    - name: Explicitly fetch tags
+      run: git fetch --force --tags
+    - name: Prepare artifact store
+      run: mkdir -p ./buck-out/gen
+    - name: Build ubuntu20to22
+      id: build
+      uses: SandakovMM/build-with-buck@v3
+      with:
+        command: build
+        target: :ubuntu20to22
+    - name: Store result
+      uses: actions/upload-artifact@v3
+      with:
+        name: ubuntu20to22
+        path: ./buck-out/gen/ubuntu20to22
