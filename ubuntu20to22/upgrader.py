@@ -5,7 +5,7 @@ import os
 import typing
 
 from pleskdistup import actions
-from pleskdistup.common import action, feedback
+from pleskdistup.common import action, feedback, php, version
 from pleskdistup.phase import Phase
 from pleskdistup.upgrader import dist, DistUpgrader, DistUpgraderFactory, PathType
 
@@ -144,10 +144,14 @@ class Ubuntu20to22Upgrader(DistUpgrader):
         if phase is Phase.FINISH:
             return []
 
+        PHP_VERSIONS_SUPPORTED_BY_ALMA_8 = ["7.0"] + [str(php) for php in php.get_known_php_versions() if php >= version.PHPVersion("7.4")]
+
         return [
             actions.AssertMinPleskVersion("18.0.44"),
             actions.AssertPleskInstallerNotInProgress(),
-            actions.AssertMinPhpVersion("7.4"),
+            actions.AssertInstalledPhpVersionsInList(PHP_VERSIONS_SUPPORTED_BY_ALMA_8),
+            actions.AssertPhpVersionsUsedByWebsitesInList(PHP_VERSIONS_SUPPORTED_BY_ALMA_8),
+            actions.AssertPhpVersionsUsedByCronInList(PHP_VERSIONS_SUPPORTED_BY_ALMA_8),
             actions.AssertDpkgNotLocked(),
             actions.AssertNotInContainer(),
             actions.AssertPleskComponents(not_installed=["mailman"]),
