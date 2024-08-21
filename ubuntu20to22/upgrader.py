@@ -7,26 +7,20 @@ import typing
 from pleskdistup import actions
 from pleskdistup.common import action, feedback
 from pleskdistup.phase import Phase
-from pleskdistup.upgrader import DistUpgrader, DistUpgraderFactory, PathType, SystemDescription
+from pleskdistup.upgrader import dist, DistUpgrader, DistUpgraderFactory, PathType
 
 import ubuntu20to22.config
 
 
 class Ubuntu20to22Upgrader(DistUpgrader):
-    _os_from_name = "Ubuntu"
-    _os_from_version = "20"
-    _os_to_name = "Ubuntu"
-    _os_to_version = "22"
+    _distro_from = dist.Ubuntu("20")
+    _distro_to = dist.Ubuntu("22")
 
     def __init__(self):
         super().__init__()
 
     def __repr__(self) -> str:
-        attrs = ", ".join(f"{k}={getattr(self, k)!r}" for k in (
-            "_os_from_name", "_os_from_version",
-            "_os_to_name", "_os_to_version",
-        ))
-        return f"{self.__class__.__name__}({attrs})"
+        return f"{self.__class__.__name__}(From {self._distro_from}, To {self._distro_to})"
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}"
@@ -34,22 +28,12 @@ class Ubuntu20to22Upgrader(DistUpgrader):
     @classmethod
     def supports(
         cls,
-        from_system: typing.Optional[SystemDescription] = None,
-        to_system: typing.Optional[SystemDescription] = None
+        from_system: typing.Optional[dist.Distro] = None,
+        to_system: typing.Optional[dist.Distro] = None
     ) -> bool:
-        def matching_system(
-            system: SystemDescription,
-            os_name: str,
-            os_version: str,
-        ) -> bool:
-            return (
-                (system.os_name is None or system.os_name == os_name)
-                and (system.os_version is None or system.os_version == os_version)
-            )
-
         return (
-            (from_system is None or matching_system(from_system, cls._os_from_name, cls._os_from_version))
-            and (to_system is None or matching_system(to_system, cls._os_to_name, cls._os_to_version))
+            (from_system is None or cls._distro_from == from_system)
+            and (to_system is None or cls._distro_to == to_system)
         )
 
     @property
@@ -82,7 +66,7 @@ class Ubuntu20to22Upgrader(DistUpgrader):
         options: typing.Any,
         phase: Phase
     ) -> typing.Dict[str, typing.List[action.ActiveAction]]:
-        new_os = f"{self._os_to_name} {self._os_to_version}"
+        new_os = str(self._distro_to)
         return {
             "Prepare": [
                 actions.HandleConversionStatus(
@@ -179,7 +163,7 @@ class Ubuntu20to22Upgrader(DistUpgrader):
         ]
 
     def parse_args(self, args: typing.Sequence[str]) -> None:
-        DESC_MESSAGE = f"""Use this upgrader to dist-upgrade an {self._os_from_name} {self._os_from_version} server with Plesk to {self._os_to_name} {self._os_to_version}.
+        DESC_MESSAGE = f"""Use this upgrader to dist-upgrade an {self._distro_from} server with Plesk to {self._distro_to}. The process consists of the following general stages:
 The process consists of the following general stages:
 
 -- Preparation (about 5 minutes) - The OS is prepared for the conversion.
@@ -220,8 +204,8 @@ class Ubuntu20to22Factory(DistUpgraderFactory):
 
     def supports(
         self,
-        from_system: typing.Optional[SystemDescription] = None,
-        to_system: typing.Optional[SystemDescription] = None
+        from_system: typing.Optional[dist.Distro] = None,
+        to_system: typing.Optional[dist.Distro] = None
     ) -> bool:
         return Ubuntu20to22Upgrader.supports(from_system, to_system)
 
