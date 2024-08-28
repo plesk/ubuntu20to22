@@ -144,7 +144,7 @@ class Ubuntu20to22Upgrader(DistUpgrader):
         if phase is Phase.FINISH:
             return []
 
-        PHP_VERSIONS_SUPPORTED_BY_ALMA_8 = ["7.0"] + [str(php) for php in php.get_known_php_versions() if php >= version.PHPVersion("7.4")]
+        PHP_VERSIONS_SUPPORTED_BY_ALMA_8 = ["7.0"] + [str(php) for php in php.get_known_php_versions() if php >= version.PHPVersion("7.3")]
 
         return [
             actions.AssertMinPleskVersion("18.0.44"),
