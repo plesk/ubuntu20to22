@@ -108,6 +108,9 @@ class Ubuntu20to22Upgrader(DistUpgrader):
                 actions.EnableEnhancedSecurityMode(),
             ],
             "Switch repositories": [
+                # UpdateLegacyPhpRepositories specific for distupgrades where
+                #  we support following PHP versions: PHP 7.1, 7.2, 7.3.
+                actions.UpdateLegacyPhpRepositories(self._distro_from, self._distro_to),
                 actions.SetupUbuntuRepositories("focal", "jammy"),
                 actions.SwitchPleskRepositories(to_os_version="22.04"),
             ],
