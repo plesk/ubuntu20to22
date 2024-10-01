@@ -112,6 +112,10 @@ class Ubuntu20to22Upgrader(DistUpgrader):
                 #  we support following PHP versions: PHP 7.1, 7.2, 7.3.
                 actions.UpdateLegacyPhpRepositories(self._distro_from, self._distro_to),
                 actions.SetupUbuntuRepositories("focal", "jammy"),
+                actions.ReplaceAptReposRegexp(
+                    r'(http|https)://([^/]+)/(.*\b)20\.04(\b.*)',
+                    '\g<1>://\g<2>/\g<3>22.04\g<4>',
+                ),
                 actions.SwitchPleskRepositories(to_os_version="22.04"),
             ],
             "Dist-upgrade": [
