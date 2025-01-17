@@ -5,7 +5,7 @@ import os
 import typing
 
 from pleskdistup import actions
-from pleskdistup.common import action, feedback, php, version
+from pleskdistup.common import action, feedback, php, version, strings
 from pleskdistup.phase import Phase
 from pleskdistup.upgrader import dist, DistUpgrader, DistUpgraderFactory, PathType
 
@@ -112,10 +112,10 @@ class Ubuntu20to22Upgrader(DistUpgrader):
                 # UpdateLegacyPhpRepositories specific for distupgrades where
                 #  we support following PHP versions: PHP 7.1, 7.2, 7.3.
                 actions.UpdateLegacyPhpRepositories(self._distro_from, self._distro_to),
-                actions.SetupUbuntuRepositories("focal", "jammy"),
-                actions.ReplaceAptReposRegexp(
-                    r'(http|https)://([^/]+)/(.*\b)20\.04(\b.*)',
-                    '\g<1>://\g<2>/\g<3>22.04\g<4>',
+                actions.AdoptAptRepositoriesUbuntu([
+                    strings.create_replace_string_function('focal', 'jammy'),
+                    strings.create_replace_regexp_function(r'(http|https)://([^/]+)/(.*\b)20\.04(\b.*)', '\g<1>://\g<2>/\g<3>22.04\g<4>')
+                    ], name="modify apt repositories to new OS"
                 ),
                 actions.SwitchPleskRepositories(to_os_version="22.04"),
             ],
