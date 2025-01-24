@@ -152,14 +152,14 @@ class Ubuntu20to22Upgrader(DistUpgrader):
         if phase is Phase.FINISH:
             return []
 
-        PHP_VERSIONS_SUPPORTED_BY_ALMA_8 = ["7.0"] + [str(php) for php in php.get_known_php_versions() if php >= version.PHPVersion("7.3")]
+        PHP_VERSIONS_SUPPORTED_BY_UBUNTU_22 = ["7.0"] + [str(php) for php in php.get_known_php_versions() if php >= version.PHPVersion("7.2")]
 
         return [
             actions.AssertMinPleskVersion("18.0.44"),
             actions.AssertPleskInstallerNotInProgress(),
-            actions.AssertInstalledPhpVersionsInList(PHP_VERSIONS_SUPPORTED_BY_ALMA_8),
-            actions.AssertPhpVersionsUsedByWebsitesInList(PHP_VERSIONS_SUPPORTED_BY_ALMA_8),
-            actions.AssertPhpVersionsUsedByCronInList(PHP_VERSIONS_SUPPORTED_BY_ALMA_8),
+            actions.AssertInstalledPhpVersionsInList(PHP_VERSIONS_SUPPORTED_BY_UBUNTU_22),
+            actions.AssertPhpVersionsUsedByWebsitesInList(PHP_VERSIONS_SUPPORTED_BY_UBUNTU_22),
+            actions.AssertPhpVersionsUsedByCronInList(PHP_VERSIONS_SUPPORTED_BY_UBUNTU_22),
             actions.AssertDpkgNotLocked(),
             actions.AssertNotInContainer(),
             actions.AssertPleskComponents(not_installed=["mailman"]),
