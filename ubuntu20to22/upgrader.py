@@ -106,6 +106,7 @@ class Ubuntu20to22Upgrader(DistUpgrader):
                         ),
                     },
                 }),
+                actions.HoldMariadbAmbientCapabilities(),
                 actions.EnableEnhancedSecurityMode(),
             ],
             "Switch repositories": [
