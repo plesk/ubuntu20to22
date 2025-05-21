@@ -172,6 +172,15 @@ class Ubuntu20to22Upgrader(DistUpgrader):
                     "/usr": 1800 * 1024**2,
                     "/var": 2000 * 1024**2,
                 }
+            ),
+            actions.AssertRepositorySubstitutionAvailable(
+                target_repository_file="/etc/apt/sources.list.d/mariadb.list",
+                substitution_rule=strings.create_replace_string_function("focal", "jammy"),
+                name="asserting mariadb repository substitution available",
+                description_addition="""\tCurrent MariaDB repository is not available on the target platform.
+\tTo proceed with dist-upgrade update MariaDB to version 10.6 or higher using the official repository,
+\tor configure a custom repository that supports Ubuntu 22.04.
+""",
             )
         ]
 
