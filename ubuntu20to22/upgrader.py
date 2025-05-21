@@ -19,6 +19,8 @@ class Ubuntu20to22Upgrader(DistUpgrader):
     def __init__(self):
         super().__init__()
 
+        self.downgrade_allowed = False
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(From {self._distro_from}, To {self._distro_to})"
 
@@ -78,7 +80,7 @@ class Ubuntu20to22Upgrader(DistUpgrader):
                 actions.AddInProgressSshLoginMessage(new_os),
                 actions.DisablePleskSshBanner(),
                 actions.RepairPleskInstallation(),  # Executed at the finish phase only
-                actions.UpgradePackages(),
+                actions.UpgradePackages(allow_downgrade=self.downgrade_allowed),
                 actions.UpdatePlesk(),
                 actions.AddUpgradeSystemdService(
                     os.path.abspath(upgrader_bin_path),
@@ -211,7 +213,11 @@ the log file.
             "-h", "--help", action="help", default=argparse.SUPPRESS,
             help=argparse.SUPPRESS,
         )
-        parser.parse_args(args)
+        parser.add_argument("--allow-downgrade", action="store_true", dest="downgrade_allowed", default=False,
+                            help="Allow packages downgrade. In some cases, apt may downgrade packages to the previous version during the dist-upgrade.")
+        options = parser.parse_args(args)
+
+        self.downgrade_allowed = options.downgrade_allowed
 
 
 class Ubuntu20to22Factory(DistUpgraderFactory):
