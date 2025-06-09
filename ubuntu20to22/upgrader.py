@@ -80,6 +80,7 @@ class Ubuntu20to22Upgrader(DistUpgrader):
                 actions.AddInProgressSshLoginMessage(new_os),
                 actions.DisablePleskSshBanner(),
                 actions.RepairPleskInstallation(),  # Executed at the finish phase only
+                actions.UninstallTuxcareEls(),
                 actions.UpgradePackages(allow_downgrade=self.downgrade_allowed),
                 actions.UpdatePlesk(),
                 actions.AddUpgradeSystemdService(
