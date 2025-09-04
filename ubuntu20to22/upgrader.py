@@ -118,7 +118,7 @@ class Ubuntu20to22Upgrader(DistUpgrader):
                 actions.UpdateLegacyPhpRepositories(self._distro_from, self._distro_to),
                 actions.AdoptAptRepositoriesUbuntu([
                     strings.create_replace_string_function('focal', 'jammy'),
-                    strings.create_replace_regexp_function(r'(http|https)://([^/]+)/(.*\b)20\.04(\b.*)', '\g<1>://\g<2>/\g<3>22.04\g<4>')
+                    strings.create_replace_regexp_function(r'(http|https)://([^/]+)/(.*\b)(ubuntu|ubuntu-testing)/20\.04(\b.*)', '\g<1>://\g<2>/\g<3>\g<4>/22.04\g<5>')
                     ], name="modify apt repositories to new OS"
                 ),
                 actions.SwitchPleskRepositories(to_os_version="22.04"),
