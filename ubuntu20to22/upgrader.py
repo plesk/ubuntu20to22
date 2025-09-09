@@ -81,6 +81,9 @@ class Ubuntu20to22Upgrader(DistUpgrader):
                 actions.DisablePleskSshBanner(),
                 actions.RepairPleskInstallation(),  # Executed at the finish phase only
                 actions.UninstallTuxcareEls(),
+                actions.ProhibitLibodbcFromMicrosoftRepository(),
+            ],
+            "Preupgrade packages": [
                 actions.UpgradePackages(allow_downgrade=self.downgrade_allowed),
                 actions.UpdatePlesk(),
                 actions.AddUpgradeSystemdService(
