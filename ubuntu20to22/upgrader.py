@@ -184,7 +184,8 @@ class Ubuntu20to22Upgrader(DistUpgrader):
 \tTo proceed with dist-upgrade update MariaDB to version 10.6 or higher using the official repository,
 \tor configure a custom repository that supports Ubuntu 22.04.
 """,
-            )
+            ),
+            actions.AssertNoLibodbcFromMicrosoftRepository(),
         ]
 
     def parse_args(self, args: typing.Sequence[str]) -> None:
