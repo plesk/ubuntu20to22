@@ -81,6 +81,9 @@ class Ubuntu20to22Upgrader(DistUpgrader):
                 actions.DisablePleskSshBanner(),
                 actions.RepairPleskInstallation(),  # Executed at the finish phase only
                 actions.UninstallTuxcareEls(),
+                actions.ProhibitLibodbcFromMicrosoftRepository(),
+            ],
+            "Preupgrade packages": [
                 actions.UpgradePackages(allow_downgrade=self.downgrade_allowed),
                 actions.UpdatePlesk(),
                 actions.AddUpgradeSystemdService(
@@ -184,7 +187,8 @@ class Ubuntu20to22Upgrader(DistUpgrader):
 \tTo proceed with dist-upgrade update MariaDB to version 10.6 or higher using the official repository,
 \tor configure a custom repository that supports Ubuntu 22.04.
 """,
-            )
+            ),
+            actions.AssertNoLibodbcFromMicrosoftRepository(),
         ]
 
     def parse_args(self, args: typing.Sequence[str]) -> None:
