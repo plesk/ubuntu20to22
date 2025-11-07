@@ -79,17 +79,17 @@ class Ubuntu20to22Upgrader(DistUpgrader):
                 actions.AddFinishSshLoginMessage(new_os),  # Executed at the finish phase only
                 actions.AddInProgressSshLoginMessage(new_os),
                 actions.DisablePleskSshBanner(),
-                actions.RepairPleskInstallation(),  # Executed at the finish phase only
                 actions.UninstallTuxcareEls(),
                 actions.ProhibitLibodbcFromMicrosoftRepository(),
-            ],
-            "Preupgrade packages": [
-                actions.UpgradePackages(allow_downgrade=self.downgrade_allowed),
-                actions.UpdatePlesk(),
                 actions.AddUpgradeSystemdService(
                     os.path.abspath(upgrader_bin_path),
                     options,
                 ),
+            ],
+            "Preupgrade packages": [
+                actions.RepairPleskInstallation(),  # Executed at the finish phase only
+                actions.UpgradePackages(allow_downgrade=self.downgrade_allowed),
+                actions.UpdatePlesk(),
                 actions.ConfigureMariadb({
                     "mysqld.bind-address": {
                         "prepare": actions.ConfigValueReplacer(
