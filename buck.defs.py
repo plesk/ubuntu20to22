@@ -1,4 +1,4 @@
-# Copyright 2024. Plesk International GmbH. All rights reserved.
+# Copyright 1999-2026. Plesk International GmbH. All rights reserved.
 # vim:ft=python:
 
 import os.path

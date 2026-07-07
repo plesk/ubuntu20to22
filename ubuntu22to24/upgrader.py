@@ -1,4 +1,4 @@
-# Copyright 2024. Plesk International GmbH. All rights reserved.
+# Copyright 1999-2026. Plesk International GmbH. All rights reserved.
 
 import argparse
 import os
@@ -9,12 +9,12 @@ from pleskdistup.common import action, feedback, php, version, strings
 from pleskdistup.phase import Phase
 from pleskdistup.upgrader import dist, DistUpgrader, DistUpgraderFactory, PathType
 
-import ubuntu20to22.config
+import ubuntu22to24.config
 
 
-class Ubuntu20to22Upgrader(DistUpgrader):
-    _distro_from = dist.Ubuntu("20")
-    _distro_to = dist.Ubuntu("22")
+class Ubuntu22to24Upgrader(DistUpgrader):
+    _distro_from = dist.Ubuntu("22")
+    _distro_to = dist.Ubuntu("24")
 
     def __init__(self):
         super().__init__()
@@ -40,15 +40,15 @@ class Ubuntu20to22Upgrader(DistUpgrader):
 
     @property
     def upgrader_name(self) -> str:
-        return "Plesk::Ubuntu20to22Upgrader"
+        return "Plesk::Ubuntu22to24Upgrader"
 
     @property
     def upgrader_version(self) -> str:
-        return ubuntu20to22.config.revision
+        return ubuntu22to24.config.revision
 
     @property
     def issues_url(self) -> str:
-        return "https://github.com/plesk/ubuntu20to22/issues"
+        return "https://github.com/plesk/ubuntu22to24/issues"
 
     def prepare_feedback(
         self,
@@ -121,10 +121,12 @@ class Ubuntu20to22Upgrader(DistUpgrader):
                 actions.UpdateLegacyPhpRepositories(self._distro_from, self._distro_to),
                 actions.AdoptAptRepositoriesUbuntu([
                     strings.create_replace_string_function('focal', 'jammy'),
-                    strings.create_replace_regexp_function(r'(http|https)://([^/]+)/(.*\b)(ubuntu|ubuntu-testing)/20\.04(\b.*)', '\g<1>://\g<2>/\g<3>\g<4>/22.04\g<5>')
+                    strings.create_replace_regexp_function(
+                        r'(http|https)://([^/]+)/(.*\b)(ubuntu|ubuntu-testing)/22\.04(\b.*)',
+                        r'\g<1>://\g<2>/\g<3>\g<4>/24.04\g<5>')
                     ], name="modify apt repositories to new OS"
                 ),
-                actions.SwitchPleskRepositories(to_os_version="22.04"),
+                actions.SwitchPleskRepositories(to_os_version="24.04"),
             ],
             "Dist-upgrade": [
                 actions.DoDistupgrade(),
@@ -159,14 +161,15 @@ class Ubuntu20to22Upgrader(DistUpgrader):
         if phase is Phase.FINISH:
             return []
 
-        PHP_VERSIONS_SUPPORTED_BY_UBUNTU_22 = [str(php) for php in php.get_known_php_versions() if php >= version.PHPVersion("7.0")]
+        PHP_VERSIONS_SUPPORTED_BY_UBUNTU_24 = [
+            str(php) for php in php.get_known_php_versions() if php >= version.PHPVersion("7.0")]
 
         return [
             actions.AssertMinPleskVersion("18.0.44"),
             actions.AssertPleskInstallerNotInProgress(),
-            actions.AssertInstalledPhpVersionsInList(PHP_VERSIONS_SUPPORTED_BY_UBUNTU_22),
-            actions.AssertPhpVersionsUsedByWebsitesInList(PHP_VERSIONS_SUPPORTED_BY_UBUNTU_22),
-            actions.AssertPhpVersionsUsedByCronInList(PHP_VERSIONS_SUPPORTED_BY_UBUNTU_22),
+            actions.AssertInstalledPhpVersionsInList(PHP_VERSIONS_SUPPORTED_BY_UBUNTU_24),
+            actions.AssertPhpVersionsUsedByWebsitesInList(PHP_VERSIONS_SUPPORTED_BY_UBUNTU_24),
+            actions.AssertPhpVersionsUsedByCronInList(PHP_VERSIONS_SUPPORTED_BY_UBUNTU_24),
             actions.AssertDpkgNotLocked(),
             actions.AssertNotInContainer(),
             actions.AssertPleskComponents(not_installed=["mailman"]),
@@ -185,14 +188,15 @@ class Ubuntu20to22Upgrader(DistUpgrader):
                 name="asserting mariadb repository substitution available",
                 description_addition="""\tCurrent MariaDB repository is not available on the target platform.
 \tTo proceed with dist-upgrade update MariaDB to version 10.6 or higher using the official repository,
-\tor configure a custom repository that supports Ubuntu 22.04.
+\tor configure a custom repository that supports Ubuntu 24.04.
 """,
             ),
             actions.AssertNoLibodbcFromMicrosoftRepository(),
         ]
 
     def parse_args(self, args: typing.Sequence[str]) -> None:
-        DESC_MESSAGE = f"""Use this upgrader to dist-upgrade an {self._distro_from} server with Plesk to {self._distro_to}. The process consists of the following general stages:
+        DESC_MESSAGE = f"""Use this upgrader to dist-upgrade an \
+{self._distro_from} server with Plesk to {self._distro_to}.
 The process consists of the following general stages:
 
 -- Preparation (about 5 minutes) - The OS is prepared for the conversion.
@@ -218,14 +222,17 @@ the log file.
             "-h", "--help", action="help", default=argparse.SUPPRESS,
             help=argparse.SUPPRESS,
         )
-        parser.add_argument("--allow-downgrade", action="store_true", dest="downgrade_allowed", default=False,
-                            help="Allow packages downgrade. In some cases, apt may downgrade packages to the previous version during the dist-upgrade.")
+        parser.add_argument(
+            "--allow-downgrade", action="store_true", dest="downgrade_allowed",
+            default=False,
+            help="Allow packages downgrade. In some cases, apt may downgrade "
+            "packages to the previous version during the dist-upgrade.")
         options = parser.parse_args(args)
 
         self.downgrade_allowed = options.downgrade_allowed
 
 
-class Ubuntu20to22Factory(DistUpgraderFactory):
+class Ubuntu22to24Factory(DistUpgraderFactory):
     def __init__(self):
         super().__init__()
 
@@ -240,11 +247,11 @@ class Ubuntu20to22Factory(DistUpgraderFactory):
         from_system: typing.Optional[dist.Distro] = None,
         to_system: typing.Optional[dist.Distro] = None
     ) -> bool:
-        return Ubuntu20to22Upgrader.supports(from_system, to_system)
+        return Ubuntu22to24Upgrader.supports(from_system, to_system)
 
     @property
     def upgrader_name(self) -> str:
-        return "Plesk::Ubuntu20to22Upgrader"
+        return "Plesk::Ubuntu22to24Upgrader"
 
     def create_upgrader(self, *args, **kwargs) -> DistUpgrader:
-        return Ubuntu20to22Upgrader(*args, **kwargs)
+        return Ubuntu22to24Upgrader(*args, **kwargs)
