@@ -14,4 +14,4 @@ def get_product_revision():
 
 def get_product_version():
     rev = get_product_revision()
-    return rev.lstrip('v').split('-', 1)[0] if '-' in rev else ''
+    return rev.lstrip('v').split('-', 1)[0] if rev.startswith('v') else ''
