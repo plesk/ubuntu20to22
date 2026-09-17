@@ -39,8 +39,8 @@ To retrieve the latest available version of the tool, please navigate to the "Re
 
 To prepare the latest version of the tool for use, please run the following commands:
 ```shell
-> wget https://github.com/plesk/ubuntu20to22/releases/download/v1.1.7/ubuntu20to22-1.1.7.zip
-> unzip ubuntu20to22-1.1.7.zip
+> wget https://github.com/plesk/ubuntu20to22/releases/download/v1.1.8/ubuntu20to22-1.1.8.zip
+> unzip ubuntu20to22-1.1.8.zip
 > chmod 755 ubuntu20to22
 ```
 
